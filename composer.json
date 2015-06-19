@@ -23,7 +23,9 @@
         "docs": "https://docs.portphp.org"
     },
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "portphp/portphp": "1.0.x-dev",
+        "doctrine/dbal": "^2.4"
     },
     "autoload": {
         "psr-4": {
@@ -31,6 +33,7 @@
         }
     },
     "require-dev": {
+        "ext-sqlite3": "*",
         "phpunit/phpunit": "^4.0",
         "phpspec/phpspec": "^2.1"
     },

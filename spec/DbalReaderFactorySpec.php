@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Port\Reader\Factory;
+namespace spec\Port\Dbal;
 
 use Doctrine\DBAL\Connection;
 use PhpSpec\ObjectBehavior;
@@ -14,11 +14,11 @@ class DbalReaderFactorySpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Port\Reader\Factory\DbalReaderFactory');
+        $this->shouldHaveType('Port\Dbal\DbalReaderFactory');
     }
 
     function it_creates_a_reader()
     {
-        $this->getReader('SQL', [])->shouldHaveType('Port\Reader\DbalReader');
+        $this->getReader('SQL', [])->shouldHaveType('Port\Dbal\DbalReader');
     }
 }

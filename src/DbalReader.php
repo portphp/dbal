@@ -1,8 +1,10 @@
 <?php
-namespace Port\Reader;
+
+namespace Port\Dbal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Statement;
+use Port\Reader\CountableReader;
 
 /**
  * Reads data through the Doctrine DBAL
