@@ -25,13 +25,6 @@ class DbalReaderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($reader->isRowCountCalculated());
     }
 
-    public function testGetFields()
-    {
-        $fields = $this->getReader()->getFields();
-        $this->assertInternalType('array', $fields);
-        $this->assertEquals(array('id', 'username', 'name'), $fields);
-    }
-
     public function testCount()
     {
         $this->assertEquals(10, $this->getReader()->count());
@@ -58,7 +51,7 @@ class DbalReaderTest extends \PHPUnit_Framework_TestCase
     {
         $reader = $this->getReader();
         $reader->count();
-        $reader->getFields();
+        $reader->current();
 
         $this->assertAttributeNotEmpty('rowCount', $reader);
         $this->assertAttributeNotEmpty('stmt', $reader);
@@ -121,7 +114,7 @@ class DbalReaderTest extends \PHPUnit_Framework_TestCase
         $reader = $this->getReader();
 
         $reader->setSql(null, array('name' => 'unknown group'));
-        $this->assertInternalType('array', $reader->getFields());
+        $this->assertFalse($reader->current());
     }
 
     public function testCallValidRewindsIfNeeded()

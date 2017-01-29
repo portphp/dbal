@@ -84,21 +84,6 @@ class DbalReader implements CountableReader
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getFields()
-    {
-        if (null === $this->data) {
-            $this->rewind();
-        }
-        if (false === $this->data) {
-            return [];
-        }
-
-        return array_keys((array) $this->data);
-    }
-
-    /**
      * Set Query string with Parameters
      *
      * @param string $sql
