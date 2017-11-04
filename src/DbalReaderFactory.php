@@ -3,13 +3,14 @@
 namespace Port\Dbal;
 
 use Doctrine\DBAL\Connection;
+use Port\Reader\ReaderFactory;
 
 /**
  * Factory that creates DbalReaders
  *
  * @author David de Boer <david@ddeboer.nl>
  */
-class DbalReaderFactory
+class DbalReaderFactory implements ReaderFactory
 {
     /**
      * @var Connection
