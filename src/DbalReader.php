@@ -35,6 +35,11 @@ class DbalReader implements CountableReader
      * @var array
      */
     private $params;
+    
+    /**
+     * @var array
+     */
+    private $types;
 
     /**
      * @var integer
@@ -55,12 +60,13 @@ class DbalReader implements CountableReader
      * @param Connection $connection
      * @param string     $sql
      * @param array      $params
+     * @param array      $types
      */
-    public function __construct(Connection $connection, $sql, array $params = [])
+    public function __construct(Connection $connection, $sql, array $params = [], array $types = [])
     {
         $this->connection = $connection;
 
-        $this->setSql($sql, $params);
+        $this->setSql($sql, $params, $types);
     }
 
     /**
@@ -88,22 +94,25 @@ class DbalReader implements CountableReader
      *
      * @param string $sql
      * @param array  $params
+     * @param array  $types
      */
-    public function setSql($sql, array $params = [])
+    public function setSql($sql, array $params = [], array $types = [])
     {
         $this->sql = (string) $sql;
 
-        $this->setSqlParameters($params);
+        $this->setSqlParameters($params, $types);
     }
 
     /**
      * Set SQL parameters
      *
      * @param array $params
+     * @param array $types
      */
-    public function setSqlParameters(array $params)
+    public function setSqlParameters(array $params, array $types = [])
     {
         $this->params = $params;
+        $this->types = $types;
 
         $this->stmt = null;
         $this->rowCount = null;
@@ -156,7 +165,7 @@ class DbalReader implements CountableReader
     public function rewind()
     {
         if (null === $this->stmt) {
-            $this->stmt = $this->prepare($this->sql, $this->params);
+            $this->stmt = $this->prepare($this->sql, $this->params, $this->types);
         }
         if (0 !== $this->key) {
             $this->stmt->execute();
@@ -186,7 +195,7 @@ class DbalReader implements CountableReader
 
     private function doCalcRowCount()
     {
-        $statement = $this->prepare(sprintf('SELECT COUNT(*) FROM (%s)', $this->sql), $this->params);
+        $statement = $this->prepare(sprintf('SELECT COUNT(*) FROM (%s)', $this->sql), $this->params, $this->types);
         $statement->execute();
 
         $this->rowCount = (int) $statement->fetchColumn(0);
@@ -197,14 +206,16 @@ class DbalReader implements CountableReader
      *
      * @param string $sql
      * @param array  $params
+     * @param array  $types
      *
      * @return Statement
      */
-    private function prepare($sql, array $params)
+    private function prepare($sql, array $params, array $types)
     {
         $statement = $this->connection->prepare($sql);
         foreach ($params as $key => $value) {
-            $statement->bindValue($key, $value);
+            $type = isset($types[$key]) ? $types[$key] : null;
+            $statement->bindValue($key, $value, $type);
         }
 
         return $statement;
