@@ -1,9 +1,9 @@
 # Port DBAL adapter
 
-[![Latest Version](https://img.shields.io/github/release/portphp/dbal-adapter.svg?style=flat-square)](https://github.com/portphp/dbal-adapter/releases)
-[![Build Status](https://travis-ci.org/portphp/dbal-adapter.svg)](https://travis-ci.org/portphp/dbal-adapter)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/portphp/dbal-adapter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/portphp/dbal-adapter/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/portphp/dbal-adapter/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/portphp/dbal-adapter/?branch=master)
+[![Latest Version](https://img.shields.io/github/release/portphp/dbal.svg?style=flat-square)](https://github.com/portphp/dbal/releases)
+[![Build Status](https://travis-ci.org/portphp/dbal.svg)](https://travis-ci.org/portphp/dbal)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/portphp/dbal/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/portphp/dbal/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/portphp/dbal/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/portphp/dbal/?branch=master)
 
 Doctrine DBAL adapter for [Port](https://github.com/portphp).
 
@@ -31,7 +31,7 @@ Please report issues and request features at https://github.com/portphp/portphp/
 ## Contributing
 
 Contributions are very welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for
-details. Thanks to [everyone who has contributed](https://github.com/portphp/dbal-adapter/graphs/contributors)
+details. Thanks to [everyone who has contributed](https://github.com/portphp/dbal/graphs/contributors)
 already.
 
 ## Security
