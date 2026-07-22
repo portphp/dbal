@@ -3,35 +3,18 @@
 namespace Port\Dbal;
 
 use Doctrine\DBAL\Connection;
-use Port\Reader\ReaderFactory;
 
 /**
  * Factory that creates DbalReaders
- *
- * @author David de Boer <david@ddeboer.nl>
  */
-class DbalReaderFactory implements ReaderFactory
+class DbalReaderFactory
 {
-    /**
-     * @var Connection
-     */
-    protected $connection;
-
-    /**
-     * @param Connection $connection
-     */
-    public function __construct(Connection $connection)
-    {
-        $this->connection = $connection;
+    public function __construct(
+        private Connection $connection
+    ) {
     }
 
-    /**
-     * @param string $sql
-     * @param array  $params
-     *
-     * @return DbalReader
-     */
-    public function getReader($sql, array $params = [])
+    public function getReader(string $sql, array $params = []): DbalReader
     {
         return new DbalReader($this->connection, $sql, $params);
     }

@@ -3,7 +3,7 @@
 namespace Port\Dbal;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Statement;
+use Doctrine\DBAL\Result;
 use Port\Reader\CountableReader;
 
 /**
@@ -11,202 +11,108 @@ use Port\Reader\CountableReader;
  */
 class DbalReader implements CountableReader
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
 
-    /**
-     * @var array
-     */
-    private $data;
+    private ?array $data = null;
 
-    /**
-     * @var Statement
-     */
-    private $stmt;
+    private ?Result $result = null;
 
-    /**
-     * @var string
-     */
-    private $sql;
+    private string $sql = '';
 
-    /**
-     * @var array
-     */
-    private $params;
+    private array $params = [];
 
-    /**
-     * @var integer
-     */
-    private $rowCount;
+    private ?int $rowCount = null;
 
-    /**
-     * @var boolean
-     */
-    private $rowCountCalculated = true;
+    private bool $rowCountCalculated = true;
 
-    /**
-     * @var string
-     */
-    private $key;
+    private int $key = 0;
 
-    /**
-     * @param Connection $connection
-     * @param string     $sql
-     * @param array      $params
-     */
-    public function __construct(Connection $connection, $sql, array $params = [])
+    public function __construct(Connection $connection, string $sql, array $params = [])
     {
         $this->connection = $connection;
-
         $this->setSql($sql, $params);
     }
 
-    /**
-     * Do calculate row count?
-     *
-     * @param boolean $calculate
-     */
-    public function setRowCountCalculated($calculate = true)
+    public function setRowCountCalculated(bool $calculate = true): void
     {
-        $this->rowCountCalculated = (bool) $calculate;
+        $this->rowCountCalculated = $calculate;
     }
 
-    /**
-     * Is row count calculated?
-     *
-     * @return boolean
-     */
-    public function isRowCountCalculated()
+    public function isRowCountCalculated(): bool
     {
         return $this->rowCountCalculated;
     }
 
-    /**
-     * Set Query string with Parameters
-     *
-     * @param string $sql
-     * @param array  $params
-     */
-    public function setSql($sql, array $params = [])
+    public function setSql(string $sql, array $params = []): void
     {
-        $this->sql = (string) $sql;
-
+        $this->sql = $sql;
         $this->setSqlParameters($params);
     }
 
-    /**
-     * Set SQL parameters
-     *
-     * @param array $params
-     */
-    public function setSqlParameters(array $params)
+    public function setSqlParameters(array $params): void
     {
         $this->params = $params;
-
-        $this->stmt = null;
+        $this->result = null;
         $this->rowCount = null;
+        $this->data = null;
+        $this->key = 0;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function current()
+    public function current(): mixed
     {
-        if (null === $this->data) {
+        if (null === $this->data && null === $this->result) {
             $this->rewind();
         }
 
         return $this->data;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function next()
+    public function next(): void
     {
         $this->key++;
-        $this->data = $this->stmt->fetch(\PDO::FETCH_ASSOC);
+        $this->data = $this->result?->fetchAssociative() ?: false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function key()
+    public function key(): mixed
     {
         return $this->key;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function valid()
+    public function valid(): bool
     {
-        if (null === $this->data) {
+        if (null === $this->data && null === $this->result) {
             $this->rewind();
         }
 
-        return (false !== $this->data);
+        return false !== $this->data;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rewind()
+    public function rewind(): void
     {
-        if (null === $this->stmt) {
-            $this->stmt = $this->prepare($this->sql, $this->params);
-        }
-        if (0 !== $this->key) {
-            $this->stmt->execute();
-            $this->data = $this->stmt->fetch(\PDO::FETCH_ASSOC);
-            $this->key = 0;
-        }
+        $this->result = $this->connection->executeQuery($this->sql, $this->params);
+        $this->data = $this->result->fetchAssociative();
+        $this->key = 0;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function count()
+    public function count(): int
     {
         if (null === $this->rowCount) {
             if ($this->rowCountCalculated) {
                 $this->doCalcRowCount();
             } else {
-                if (null === $this->stmt) {
+                if (null === $this->result) {
                     $this->rewind();
                 }
-                $this->rowCount = $this->stmt->rowCount();
+                $this->rowCount = $this->result?->rowCount() ?? 0;
             }
         }
 
         return $this->rowCount;
     }
 
-    private function doCalcRowCount()
+    private function doCalcRowCount(): void
     {
-        $statement = $this->prepare(sprintf('SELECT COUNT(*) FROM (%s) AS port_cnt', $this->sql), $this->params);
-        $statement->execute();
-
-        $this->rowCount = (int) $statement->fetchColumn(0);
-    }
-
-    /**
-     * Prepare given statement
-     *
-     * @param string $sql
-     * @param array  $params
-     *
-     * @return Statement
-     */
-    private function prepare($sql, array $params)
-    {
-        $statement = $this->connection->prepare($sql);
-        foreach ($params as $key => $value) {
-            $statement->bindValue($key, $value);
-        }
-
-        return $statement;
+        $countSql = sprintf('SELECT COUNT(*) FROM (%s) AS port_cnt', $this->sql);
+        $this->rowCount = (int) $this->connection->fetchOne($countSql, $this->params);
     }
 }
