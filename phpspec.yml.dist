@@ -1,5 +1,0 @@
-suites:
-  library_suite:
-    namespace: Port\Dbal
-    psr4_prefix: Port\Dbal
-formatter.name: pretty
