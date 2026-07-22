@@ -13,7 +13,7 @@ class DbalReader implements CountableReader
 {
     private Connection $connection;
 
-    private ?array $data = null;
+    private array|false|null $data = null;
 
     private ?Result $result = null;
 
